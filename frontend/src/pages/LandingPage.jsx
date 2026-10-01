@@ -27,7 +27,7 @@ import {
 import { campusImages } from '../assets/campusImages';
 import OccupancyDots from '../components/OccupancyDots';
 import { SkeletonCard } from '../components/SkeletonLoader';
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_BASE, parseApiResponse } from '../config/api';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -74,16 +74,14 @@ const LandingPage = () => {
     const fetchLiveAvailability = async () => {
       try {
         const res = await fetch(`${API_BASE}/rooms/available`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.rooms) {
-            setLiveRooms(data.rooms.slice(0, 4));
-            const totalAvail = data.rooms.reduce((acc, r) => acc + (r.availableBeds || 0), 0);
-            setStats(prev => ({
-              ...prev,
-              availableBeds: totalAvail > 0 ? totalAvail : prev.availableBeds,
-            }));
-          }
+        const data = await parseApiResponse(res);
+        if (data && data.success && data.rooms) {
+          setLiveRooms(data.rooms.slice(0, 4));
+          const totalAvail = data.rooms.reduce((acc, r) => acc + (r.availableBeds || 0), 0);
+          setStats(prev => ({
+            ...prev,
+            availableBeds: totalAvail > 0 ? totalAvail : prev.availableBeds,
+          }));
         }
       } catch (err) {
         console.warn('Backend not responding to public available rooms request, fallback to defaults');

@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import OccupancyDots from '../../components/OccupancyDots';
 import { SkeletonTableRow, SkeletonStat } from '../../components/SkeletonLoader';
+import { parseApiResponse } from '../../config/api';
 
 const WardenDashboard = () => {
   const { user, token, API_BASE, logout } = useAuth();
@@ -116,8 +117,8 @@ const WardenDashboard = () => {
       const res = await fetch(`${API_BASE}/rooms/stats`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success && data.stats) {
+      const data = await parseApiResponse(res);
+      if (data && data.success && data.stats) {
         setStats(data.stats);
       }
     } catch (err) {
@@ -140,8 +141,8 @@ const WardenDashboard = () => {
       const res = await fetch(`${API_BASE}/rooms?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success) {
+      const data = await parseApiResponse(res);
+      if (data && data.success) {
         setRooms(data.rooms || []);
       }
     } catch (err) {
@@ -158,8 +159,8 @@ const WardenDashboard = () => {
       const res = await fetch(`${API_BASE}/allocations`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success) {
+      const data = await parseApiResponse(res);
+      if (data && data.success) {
         setAllocations(data.allocations || []);
       }
     } catch (err) {
@@ -179,8 +180,8 @@ const WardenDashboard = () => {
       const res = await fetch(`${API_BASE}/students?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success) {
+      const data = await parseApiResponse(res);
+      if (data && data.success) {
         setStudents(data.students || []);
       }
     } catch (err) {
@@ -244,11 +245,7 @@ const WardenDashboard = () => {
         }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Failed to create room.');
-      }
+      const data = await parseApiResponse(res);
 
       setAddRoomSuccess(`Room ${data.room.roomNumber} created successfully!`);
       showToast(`Room ${data.room.roomNumber} added to inventory.`);
@@ -278,11 +275,7 @@ const WardenDashboard = () => {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Failed to delete room.');
-      }
+      const data = await parseApiResponse(res);
 
       showToast(`Room ${roomNumber} deleted successfully.`);
       fetchRooms();
@@ -300,8 +293,8 @@ const WardenDashboard = () => {
       const res = await fetch(`${API_BASE}/rooms/${room._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success) {
+      const data = await parseApiResponse(res);
+      if (data && data.success) {
         setRoomResidentsList(data.residents || []);
       }
     } catch (err) {
@@ -322,8 +315,8 @@ const WardenDashboard = () => {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success) {
+      const data = await parseApiResponse(res);
+      if (data && data.success) {
         showToast(`Deallocated ${studentName}. Bed freed successfully.`);
         if (viewingRoomResidents) {
           handleOpenResidentsModal(viewingRoomResidents);

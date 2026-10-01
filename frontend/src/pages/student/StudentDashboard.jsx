@@ -29,6 +29,7 @@ import {
 import { campusImages } from '../../assets/campusImages';
 import OccupancyDots from '../../components/OccupancyDots';
 import { SkeletonCard } from '../../components/SkeletonLoader';
+import { parseApiResponse } from '../../config/api';
 
 const StudentDashboard = () => {
   const { user, token, API_BASE, logout } = useAuth();
@@ -83,8 +84,8 @@ const StudentDashboard = () => {
       const res = await fetch(`${API_BASE}/allocations/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success && data.hasAllocation) {
+      const data = await parseApiResponse(res);
+      if (data && data.success && data.hasAllocation) {
         setHasAllocation(true);
         setAllocation(data.allocation);
         setActiveTab('myAllocation');
@@ -112,8 +113,8 @@ const StudentDashboard = () => {
       const res = await fetch(`${API_BASE}/rooms/available?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (data.success) {
+      const data = await parseApiResponse(res);
+      if (data && data.success) {
         let fetched = data.rooms || [];
         if (sortBy === 'available') {
           fetched.sort((a, b) => b.availableBeds - a.availableBeds);
@@ -158,11 +159,7 @@ const StudentDashboard = () => {
         },
       });
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Failed to complete bed booking.');
-      }
+      const data = await parseApiResponse(res);
 
       setConfirmingRoom(null);
       setInspectingRoom(null);

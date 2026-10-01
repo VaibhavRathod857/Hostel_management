@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_BASE, parseApiResponse } from '../config/api';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -24,8 +24,8 @@ export const AuthProvider = ({ children }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        const data = await response.json();
-        if (data.success && data.user) {
+        const data = await parseApiResponse(response);
+        if (data && data.success && data.user) {
           setUser(data.user);
         } else {
           logout();
@@ -47,11 +47,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, role }),
     });
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || 'Login failed.');
-    }
+    const data = await parseApiResponse(response);
 
     localStorage.setItem('hostel_token', data.token);
     setToken(data.token);
@@ -65,11 +61,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
     });
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || 'Registration failed.');
-    }
+    const data = await parseApiResponse(response);
 
     localStorage.setItem('hostel_token', data.token);
     setToken(data.token);
