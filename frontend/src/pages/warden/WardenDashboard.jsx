@@ -36,7 +36,7 @@ import { SkeletonTableRow, SkeletonStat } from '../../components/SkeletonLoader'
 import { parseApiResponse } from '../../config/api';
 
 const WardenDashboard = () => {
-  const { user, token, API_BASE, logout } = useAuth();
+  const { user, token, API_BASE, buildApiUrl, logout } = useAuth();
 
   // Navigation & UI state
   const [activeTab, setActiveTab] = useState('overview');
@@ -114,7 +114,7 @@ const WardenDashboard = () => {
   const fetchStats = async () => {
     setLoadingStats(true);
     try {
-      const res = await fetch(`${API_BASE}/rooms/stats`, {
+      const res = await fetch(buildApiUrl('/api/rooms/stats'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseApiResponse(res);
@@ -138,7 +138,7 @@ const WardenDashboard = () => {
       if (statusFilter) params.append('status', statusFilter);
       if (typeFilter) params.append('roomType', typeFilter);
 
-      const res = await fetch(`${API_BASE}/rooms?${params.toString()}`, {
+      const res = await fetch(buildApiUrl(`/api/rooms?${params.toString()}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseApiResponse(res);
@@ -156,7 +156,7 @@ const WardenDashboard = () => {
   const fetchAllocations = async () => {
     setLoadingAllocations(true);
     try {
-      const res = await fetch(`${API_BASE}/allocations`, {
+      const res = await fetch(buildApiUrl('/api/allocations'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseApiResponse(res);
@@ -177,7 +177,7 @@ const WardenDashboard = () => {
       const params = new URLSearchParams();
       if (studentSearch) params.append('search', studentSearch);
 
-      const res = await fetch(`${API_BASE}/students?${params.toString()}`, {
+      const res = await fetch(buildApiUrl(`/api/students?${params.toString()}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseApiResponse(res);
@@ -231,7 +231,7 @@ const WardenDashboard = () => {
     setAddRoomLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/rooms`, {
+      const res = await fetch(buildApiUrl('/api/rooms'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -271,7 +271,7 @@ const WardenDashboard = () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/rooms/${roomId}`, {
+      const res = await fetch(buildApiUrl(`/api/rooms/${roomId}`), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -290,7 +290,7 @@ const WardenDashboard = () => {
     setViewingRoomResidents(room);
     setLoadingResidentsModal(true);
     try {
-      const res = await fetch(`${API_BASE}/rooms/${room._id}`, {
+      const res = await fetch(buildApiUrl(`/api/rooms/${room._id}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseApiResponse(res);
@@ -311,7 +311,7 @@ const WardenDashboard = () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/allocations/cancel/${allocationId}`, {
+      const res = await fetch(buildApiUrl(`/api/allocations/cancel/${allocationId}`), {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
       });

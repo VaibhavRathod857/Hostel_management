@@ -32,7 +32,7 @@ import { SkeletonCard } from '../../components/SkeletonLoader';
 import { parseApiResponse } from '../../config/api';
 
 const StudentDashboard = () => {
-  const { user, token, API_BASE, logout } = useAuth();
+  const { user, token, API_BASE, buildApiUrl, logout } = useAuth();
 
   // Navigation tab
   const [activeTab, setActiveTab] = useState('findRoom');
@@ -81,7 +81,7 @@ const StudentDashboard = () => {
   const fetchMyAllocation = async () => {
     setLoadingAlloc(true);
     try {
-      const res = await fetch(`${API_BASE}/allocations/my`, {
+      const res = await fetch(buildApiUrl('/api/allocations/my'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseApiResponse(res);
@@ -110,7 +110,7 @@ const StudentDashboard = () => {
       if (floor !== '') params.append('floor', floor);
       if (roomType) params.append('roomType', roomType);
 
-      const res = await fetch(`${API_BASE}/rooms/available?${params.toString()}`, {
+      const res = await fetch(buildApiUrl(`/api/rooms/available?${params.toString()}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseApiResponse(res);
@@ -151,7 +151,7 @@ const StudentDashboard = () => {
     setBookingError('');
 
     try {
-      const res = await fetch(`${API_BASE}/allocations/book/${confirmingRoom._id}`, {
+      const res = await fetch(buildApiUrl(`/api/allocations/book/${confirmingRoom._id}`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

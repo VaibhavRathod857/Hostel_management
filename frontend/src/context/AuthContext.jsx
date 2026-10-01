@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-import { API_BASE, parseApiResponse } from '../config/api';
+import { API_BASE, BACKEND_ORIGIN, buildApiUrl, apiFetch, parseApiResponse } from '../config/api';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await fetch(`${API_BASE}/auth/me`, {
+        const response = await fetch(buildApiUrl('/api/auth/me'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password, role) => {
-    const response = await fetch(`${API_BASE}/auth/login`, {
+    const response = await fetch(buildApiUrl('/api/auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, role }),
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    const response = await fetch(`${API_BASE}/auth/register`, {
+    const response = await fetch(buildApiUrl('/api/auth/register'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, API_BASE }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, API_BASE, BACKEND_ORIGIN, buildApiUrl, apiFetch }}>
       {children}
     </AuthContext.Provider>
   );

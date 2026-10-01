@@ -27,7 +27,7 @@ import {
 import { campusImages } from '../assets/campusImages';
 import OccupancyDots from '../components/OccupancyDots';
 import { SkeletonCard } from '../components/SkeletonLoader';
-import { API_BASE, parseApiResponse } from '../config/api';
+import { API_BASE, buildApiUrl, parseApiResponse } from '../config/api';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ const LandingPage = () => {
   useEffect(() => {
     const fetchLiveAvailability = async () => {
       try {
-        const res = await fetch(`${API_BASE}/rooms/available`);
+        const res = await fetch(buildApiUrl('/api/rooms/available'));
         const data = await parseApiResponse(res);
         if (data && data.success && data.rooms) {
           setLiveRooms(data.rooms.slice(0, 4));
